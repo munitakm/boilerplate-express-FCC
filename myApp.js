@@ -1,26 +1,32 @@
 var express = require('express');
 var app = express();
 require('dotenv').config();
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({extended: false}))
 
 
-console.log('Hello World')
-
-app.use(function(req,res,next) { 
-  console.log(req.method + " "  + req.path + " - " + req.ip);
-  next();
+app.get("/name", (req,res,next) => { 
+  let firstname = req.query.first;
+  let lastname = req.query.last;
+  res.json({ 
+    name: `${firstname} ${lastname}`
+  })
+}, (req,res) => { 
+  res.send({name})
 })
+
 
 app.get("/", (req, res) => { 
   res.sendFile(__dirname + "/views/index.html");
   app.use("/public", express.static(__dirname + "/public"));
 })
 
-app.get("/json", (req,res) => {
-  let message = "Hello json";
-    if(process.env.MESSAGE_STYLE == "uppercase") { 
-      message = message.toUpperCase();
-    }
-  res.send({"message": message});
+app.post("/name", (req,res,next) => { 
+  res.json({ 
+    name: `${req.body.first} ${req.body.last}`
+  })  
 })
+
 
  module.exports = app;
